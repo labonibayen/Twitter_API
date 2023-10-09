@@ -36,41 +36,40 @@ def write_headers_following(query):
     with open('%s_following.csv' % query, 'w', encoding='utf8') as f:
         csvwriter = csv.writer(f)
         csvwriter.writerow(
-            ["origin_account", "name", "screen_name", "id", "account_created", "profile", "location", "n_followers",
+            ["origin_account_url", "origin_account", "name", "screen_name", "id", "account_created", "profile", "location", "n_followers",
              "n_following"])
 
 def write_headers_followers(query):
     with open('%s_followers.csv' % query, 'w', encoding='utf8') as f:
         csvwriter = csv.writer(f)
         csvwriter.writerow(
-            ["origin_account", "name", "screen_name", "id", "account_created", "profile", "location", "n_followers",
+            ["origin_account_url", "origin_account", "name", "screen_name", "id", "account_created", "profile", "location", "n_followers",
              "n_following"])
 
 ############### GET FOLLOWERS/FOLLOWING DATA #######################
 
-# These don't work unless you are in the v1 environment, appear to be degraded in v2
+# These endpoints were removed by X in June 2023 and no longer work
 
 def get_followers(user):
-    auth = tweepy.OAuth1UserHandler(
-        V1_API_KEY, V1_API_KEY_SECRET, V1_ACCESS_TOKEN, V1_ACCESS_TOKEN_SECRET
-    )
-    api = tweepy.API(auth)
-    for follower in api.get_followers(screen_name=user).data:
-        row = [user, follower.name, follower.screen_name, follower.id, follower.created_at, follower.description, follower.location,
-              follower.followers_count, follower.friends_count]
+    api = tweepy.Client(bearer_token=BEARER_TOKEN,  wait_on_rate_limit=True)
+    write_headers_followers(user)
+    user_id = api.get_user(username=user).data.id
+    followers = api.get_users_followers(id=user_id)
+    profile_url = "https://twitter.com/" + user
+    for follower in api.get_list_followers(id=user_id):
+        row = [profile_url, user, follower.name, follower.screen_name, follower.id, follower.created_at, follower.description]
         with open('%s_followers.csv' % user, 'a', encoding='utf8') as f:
             csvwriter = csv.writer(f)
             csvwriter.writerow(row)
 
 def get_following(user):
-    auth = tweepy.OAuth1UserHandler(
-        V1_API_KEY, V1_API_KEY_SECRET, V1_ACCESS_TOKEN, V1_ACCESS_TOKEN_SECRET
-    )
-    api = tweepy.API(auth)
-    write_headers_following(user)
-    for friend in api.get_friends(screen_name=user).data:
-        row = [user, friend.name, friend.screen_name, friend.id, friend.created_at, friend.description,
-                friend.location, friend.followers_count, friend.friends_count]
+    api = tweepy.Client(bearer_token=BEARER_TOKEN, wait_on_rate_limit=True)
+    write_headers_followers(user)
+    user_id = api.get_user(username=user).data.id
+    followers = api.get_users_following(id=user_id)
+    profile_url = "https://twitter.com/" + user
+    for friend in api.following(screen_name=user).data:
+        row = [profile_url, user, friend.name, friend.screen_name, friend.id, friend.created_at, friend.description]
         with open('%s_followers.csv' % user, 'a', encoding='utf8') as f:
             csvwriter = csv.writer(f)
             csvwriter.writerow(row)
