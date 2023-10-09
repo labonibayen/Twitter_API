@@ -1,6 +1,6 @@
 # About
 
-Uses X's v2 API, Tweepy, Pandas, and Regex to extract tweets based on a user provided query.
+Uses X's v2 API, Tweepy, Pandas, and Regex to extract tweets based on a user provided query. Data is written to an excel file as tweets are pulled.
 
 The main python file uses the v2 Recent Search endpoint (https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-recent) to collect tweet text, post date, author information, mentions, and more.
 
