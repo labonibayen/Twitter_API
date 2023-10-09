@@ -4,7 +4,7 @@ import string
 
 FILE = "from:NatlParkService (Bear OR Alaska OR Katmai)_tweets.csv"
 
-df = pd.read_csv("/Users/kikibayen/Desktop/kikicode/"+FILE)
+df = pd.read_csv("Path/To/File"+FILE)
 df["is_retweet"] = False
 df["retweet_orig_account"] = ""
 df['mentions'] = df['tweet_text'].str.findall(r'[＠@]([^][\s#<>|{}:]+)')
